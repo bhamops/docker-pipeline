@@ -74,10 +74,10 @@ jobs:
     - name: Publish Docker Image
       run: docker push ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
 
-  skip-deploy:
+  production-publish:
     runs-on: ubuntu-latest
-    environment: skip
+    environment: production
     needs:
-      - staging-publish
-    steps:
-    - uses: actions/checkout@v3
+      - production-publish
+    if: contains(needs.production-publish.result, 'failure')
+    steps: []
