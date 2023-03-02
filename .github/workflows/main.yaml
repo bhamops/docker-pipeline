@@ -97,7 +97,7 @@ jobs:
       run: docker push ${{ env.DOCKER_IMAGE }}:${{ env.TAG }}
 
     - name: Save Image
-      run: docker save ${{ env.DOCKER_IMAGE }}:${{ env.TAG }} > ${{ github.event.repository.name }}
+      run: docker save ${{ env.DOCKER_IMAGE }}:${{ env.TAG }} > ${{ github.event.repository.name }}.tgz
 
     - name: Create Release
       uses: ncipollo/release-action@v1
