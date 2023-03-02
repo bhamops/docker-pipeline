@@ -48,3 +48,4 @@ jobs:
       tag: ${{ needs.build.outputs.tag }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
+    needs: "staging"
