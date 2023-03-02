@@ -76,8 +76,9 @@ jobs:
 
   skip-production-deploy:
     runs-on: ubuntu-latest
-    environment: production
     needs:
       - production-publish
     if: contains(needs.production-publish.result, 'failure')
-    steps: []
+    steps:
+      - name: Finished
+        run: echo Not deploying Production
