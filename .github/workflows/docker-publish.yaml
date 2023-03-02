@@ -14,12 +14,15 @@ on:
       docker-repo:
         required: true
         type: string
+      needs:
+        type: object
     secrets: 
       GCP_SA_KEY:
         required: true
 
 jobs:
   environment: ${{ inputs.environment }}
+  needs: ${{ input.needs }}
   publish:
     runs-on: ubuntu-latest
     env:
