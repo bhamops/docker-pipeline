@@ -21,8 +21,6 @@ on:
         required: true
 
 jobs:
-  environment: ${{ inputs.environment }}
-  needs: ${{ input.needs }}
   publish:
     runs-on: ubuntu-latest
     env:
