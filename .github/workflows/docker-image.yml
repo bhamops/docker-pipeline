@@ -24,7 +24,10 @@ jobs:
         
     - id: version
       name: Generate Version
-      run: echo "version=$(date +%s)" >> "$GITHUB_OUTPUT"
+      run: echo "version=$(TZ=':America/Chicago' date +'Y-%m-%dT%H-%M-%S')" >> "$GITHUB_OUTPUT"
         
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag us-central1-docker.pkg.dev/stg-main-377820/tst/core:${{ steps.version.outputs.version}}
+
+    - name: Build the Docker image
+      run: docker push us-central1-docker.pkg.dev/stg-main-377820/tst/core:${{ steps.version.outputs.version}}
