@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  publish-staging:
+  environment: staging
+  deploy:
 
     runs-on: ubuntu-latest
 
@@ -18,16 +18,45 @@ jobs:
     - name: Login to GCR
       uses: docker/login-action@v2
       with:
-        registry: us-central1-docker.pkg.dev
+        registry: ${{ vars.DOCKER_REGISTRY  }}
         username: _json_key_base64
-        password: ${{ secrets.STG_GCP_TOKEN }}
+        password: ${{ secrets.GCP_SA_KEY }}
         
     - id: version
       name: Generate Version
       run: echo "version=$(TZ=':America/Chicago' date +'Y-%m-%dT%H-%M-%S')" >> "$GITHUB_OUTPUT"
         
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag us-central1-docker.pkg.dev/stg-main-377820/tst/core:${{ steps.version.outputs.version}}
+      run: docker build . --file Dockerfile --tag ${{ vars.DOCKER_REGISTRY }}/core:${{ steps.version.outputs.version}}
+
+    - name: Debug
+      run: cat ~/.docker/config.json
+
+    - name: Publish Docker Image
+      run: docker build . --file Dockerfile --tag ${{ vars.DOCKER_REGISTRY }}/core:${{ steps.version.outputs.version}}
+
+jobs:
+  environment: production
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Login to GCR
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ vars.DOCKER_REGISTRY  }}
+        username: _json_key_base64
+        password: ${{ secrets.GCP_SA_KEY }}
+        
+    - id: version
+      name: Generate Version
+      run: echo "version=$(TZ=':America/Chicago' date +'Y-%m-%dT%H-%M-%S')" >> "$GITHUB_OUTPUT"
+        
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ${{ vars.DOCKER_REGISTRY }}/core:${{ steps.version.outputs.version}}
 
     - name: Debug
       run: cat ~/.docker/config.json
