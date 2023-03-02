@@ -108,4 +108,4 @@ jobs:
         name: Release ${{ env.TAG }}
         makeLatest: true
         generateReleaseNotes: true
-        artifacts: ${{ github.event.repository.name }}.tgz
+        artifacts: ${{ github.event.repository.name }}-${{env.TAG}}.tgz
