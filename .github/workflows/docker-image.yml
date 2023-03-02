@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build:
+  publish-staging:
 
     runs-on: ubuntu-latest
 
@@ -29,5 +29,8 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag us-central1-docker.pkg.dev/stg-main-377820/tst/core:${{ steps.version.outputs.version}}
 
-    - name: Build the Docker image
+    - name: Debug
+      run: cat ~/.docker/config.json
+
+    - name: Publish Docker Image
       run: docker push us-central1-docker.pkg.dev/stg-main-377820/tst/core:${{ steps.version.outputs.version}}
