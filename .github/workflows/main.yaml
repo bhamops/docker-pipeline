@@ -8,13 +8,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.make-tag.outputs.tag }}
     steps:
 
     - uses: actions/checkout@v3
-    - id: version
+    - id: make-tag
       name: Generate version
-      run: echo "version=$(TZ=':America/Chicago' date +'%Y-%m-%dT%H-%M-%S')" >> "$GITHUB_OUTPUT"
+      run: echo "tag=$(TZ=':America/Chicago' date +'%Y-%m-%dT%H-%M-%S')" >> "$GITHUB_OUTPUT"
 
     - name: Build the Docker image
       run: |
@@ -34,7 +34,7 @@ jobs:
     secrets: inherit
     with:
       environment: staging
-      version: ${{ needs.build.outputs.version }}
+      tag: ${{ needs.build.outputs.tag }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
 
@@ -43,6 +43,6 @@ jobs:
     secrets: inherit
     with:
       environment: production
-      version: ${{ needs.build.outputs.version }}
+      tag: ${{ needs.build.outputs.tag }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
