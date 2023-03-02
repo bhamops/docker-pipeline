@@ -55,7 +55,6 @@ jobs:
     needs:
       - staging-publish
     steps:
-    - run: exit 1
     - uses: actions/checkout@v3
     - name: Retrieve saved Docker image
       uses: actions/download-artifact@v3
@@ -79,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - production-publish
-    if: ${{ contains(needs.production-publish.result, 'failure') }}
+    if: ${{ always() && contains(needs.production-publish.result, 'failure') }}
     steps:
       - name: Finished
         run: echo Not deploying Production
