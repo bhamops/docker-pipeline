@@ -21,7 +21,7 @@ jobs:
     - name: Build the Docker image
       run: |
         mkdir .artifacts
-        docker build . --file Dockerfile --tag image:latest
+        docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE }}:${{ env.TAG }}
         docker save image:latest > .artifacts/image.tgz
 
     - name: Upload Artifacts
@@ -94,6 +94,9 @@ jobs:
 
     - name: Publish Docker Image
       run: docker push ${{ env.DOCKER_IMAGE }}:${{ env.TAG }}
+
+    - name: Save Image
+      run: docker save ${{ env.DOCKER_IMAGE }}:${{ env.TAG }} > ${{
 
     - name: Create Release
       uses: ncipollo/release-action@v1

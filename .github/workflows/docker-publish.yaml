@@ -13,4 +13,5 @@ jobs:
       tag: ${{ steps.make-tag.outputs.tag }}
     steps:
     - uses: actions/checkout@v3
+    - run: echo ${{ github.repository.name }}
     - run: echo ${{ github.event.repository.name }}
