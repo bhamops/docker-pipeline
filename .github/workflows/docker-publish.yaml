@@ -15,6 +15,7 @@ on:
       GCP_SA_KEY:
         required: true
 
+jobs:
   publish:
     runs-on: ubuntu-latest
     env:
