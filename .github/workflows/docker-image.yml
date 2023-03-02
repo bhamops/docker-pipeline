@@ -2,77 +2,47 @@ name: Full Deploy
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: ["main", "stg"]
 
 jobs:
-  staging-publish:
-    environment: staging
+  build:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_IMAGE: ${{ vars.DOCKER_URL }}/${{ vars.DOCKER_REPO }}
     outputs:
       version: ${{ steps.version.outputs.version }}
-      image: ${{ env.DOCKER_IMAGE }}
     steps:
+
     - uses: actions/checkout@v3
-
-    - name: Login to GCR
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ vars.DOCKER_URL  }}
-        username: _json_key
-        password: ${{ secrets.GCP_SA_KEY }}
-
     - id: version
       name: Generate version
       run: echo "version=$(TZ=':America/Chicago' date +'%Y-%m-%dT%H-%M-%S')" >> "$GITHUB_OUTPUT"
 
     - name: Build the Docker image
       run: |
-        docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}
         mkdir .artifacts
-        docker save ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }} > .artifacts/image.tgz
-
-    - name: Publish Docker Image
-      run: docker push ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}
+        docker build . --file Dockerfile --tag image:latest
+        docker save image:latest > .artifacts/image.tgz
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: docker-image
         path: .artifacts
-        retention-days: 7
+        retention-days: 1
 
-  production-publish:
-    runs-on: ubuntu-latest
+  staging:
+    environment: staging
+    uses: ./.github/workflows/docker-publish.yaml
+    secrets: inherit
+    with:
+      version: ${{ needs.build.outputs.version }}
+      docker-url: ${{ vars.DOCKER_URL }}
+      docker-repo: ${{ vars.DOCKER_REPO }}
+
+  production:
     environment: production
-    env:
-      VERSION: ${{ needs.staging-publish.outputs.version }}
-      STG_DOCKER_IMAGE: ${{ needs.staging-publish.outputs.image }}
-      DOCKER_IMAGE: ${{ vars.DOCKER_URL }}/${{ vars.DOCKER_REPO }}
-    needs:
-      - staging-publish
-    steps:
-    - uses: actions/checkout@v3
-    - name: Retrieve saved Docker image
-      uses: actions/download-artifact@v3
-      with:
-        name: docker-image
-        path: .artifacts
-    - name: Login to GCR
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ vars.DOCKER_URL  }}
-        username: _json_key
-        password: ${{ secrets.GCP_SA_KEY }}
-    - name: Load the Docker image
-      run: docker load < .artifacts/image.tgz
-    - name: Load the Docker image
-      run: docker tag ${{ env.STG_DOCKER_IMAGE }}:${{ env.VERSION }} ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
-    - name: Publish Docker Image
-      run: docker push ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
-    - name: Finished
-      if: ${{ always() }}
-      run: echo Not deploying Production
+    uses: ./.github/workflows/docker-publish.yaml
+    secrets: inherit
+    with:
+      version: ${{ needs.build.outputs.version }}
+      docker-url: ${{ vars.DOCKER_URL }}
+      docker-repo: ${{ vars.DOCKER_REPO }}
