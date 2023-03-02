@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  deploy:
+  deploy-staging:
     environment: staging
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
     - name: Publish Docker Image
       run: docker build . --file Dockerfile --tag ${{ vars.DOCKER_REGISTRY }}/core:${{ steps.version.outputs.version}}
 
-  deploy:
+  deploy-production:
     runs-on: ubuntu-latest
     environment: production
     steps:
