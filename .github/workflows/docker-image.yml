@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - production-publish
-    if: contains(needs.production-publish.result, 'failure')
+    if: ${{ contains(needs.production-publish.result, 'failure') }}
     steps:
       - name: Finished
         run: echo Not deploying Production
