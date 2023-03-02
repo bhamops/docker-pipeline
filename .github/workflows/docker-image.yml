@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_IMAGE: ${{ vars.DOCKER_URL }}/${{ vars.DOCKER_REPO }}
-    ouptuts:
+    outputs:
       version: ${{ steps.version.outputs.version }}
       image: ${{ env.DOCKER_IMAGE }}
     steps:
