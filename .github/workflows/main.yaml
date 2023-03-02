@@ -96,12 +96,11 @@ jobs:
       run: docker push ${{ env.DOCKER_IMAGE }}:${{ env.TAG }}
 
     - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      uses: ncipollo/release-action@v1
       with:
-        tag_name: ${{ env.TAG }}
-        release_name: Release ${{ env.TAG }}
-        draft: false
-        prerelease: false
+        tag: ${{ env.TAG }}
+        commit:
+        name: Release ${{ env.TAG }}
+        makeLatest: true
+        generateReleaseNotes: true
+        artifacts: .artifacts/image.tgz
