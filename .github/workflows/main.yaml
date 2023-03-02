@@ -34,21 +34,21 @@ jobs:
   staging:
     uses: ./.github/workflows/docker-publish.yaml
     needs: build
-    secrets: 
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
     with:
       environment: staging
       tag: ${{ needs.build.outputs.tag }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
+    secrets: 
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
 
   production:
     uses: ./.github/workflows/docker-publish.yaml
     needs: ["build", "staging"]
-    secrets:
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
     with:
       environment: production
       tag: ${{ needs.build.outputs.tag }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
+    secrets:
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
