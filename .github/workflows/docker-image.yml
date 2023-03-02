@@ -10,11 +10,11 @@ jobs:
   staging-publish:
     environment: staging
     runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE: ${{ vars.DOCKER_URL }}/${{ vars.DOCKER_REPO }}
     ouptuts:
       version: ${{ steps.version.outputs.version }}
       image: ${{ env.DOCKER_IMAGE }}
-    env:
-      DOCKER_IMAGE: ${{ vars.DOCKER_URL }}/${{ vars.DOCKER_REPO }}
     steps:
     - uses: actions/checkout@v3
 
@@ -35,12 +35,12 @@ jobs:
         mkdir .artifacts
         docker save ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }} > .artifacts/image.tgz
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: docker-image
-          path: .artifacts
-          retention-days: 7
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: docker-image
+        path: .artifacts
+        retention-days: 7
 
   production-publish:
     runs-on: ubuntu-latest
