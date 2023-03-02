@@ -42,7 +42,7 @@ jobs:
   production:
     environment: production
     uses: ./.github/workflows/docker-publish.yaml
-    needs: build
+    needs: ["build", "staging"]
     secrets: inherit
     with:
       version: ${{ needs.build.outputs.version }}
