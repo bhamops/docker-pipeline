@@ -33,7 +33,7 @@ jobs:
       run: |
         docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}
         mkdir .artifacts
-        docker save ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version}} > .artifacts/image.tgz
+        docker save ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }} > .artifacts/image.tgz
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
