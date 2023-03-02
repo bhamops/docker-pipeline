@@ -32,9 +32,8 @@ jobs:
   staging:
     uses: ./.github/workflows/docker-publish.yaml
     secrets: inherit
+    environment: staging
     with:
-      needs: build
-      environment: staging
       version: ${{ needs.build.outputs.version }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
@@ -42,9 +41,8 @@ jobs:
   production:
     uses: ./.github/workflows/docker-publish.yaml
     secrets: inherit
+    environment: production
     with:
-      needs: ["build", "staging"]
-      environment: production
       version: ${{ needs.build.outputs.version }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
