@@ -30,21 +30,21 @@ jobs:
         retention-days: 1
 
   staging:
-    environment: staging
     uses: ./.github/workflows/docker-publish.yaml
-    needs: build
     secrets: inherit
     with:
+      needs: build
+      environment: staging
       version: ${{ needs.build.outputs.version }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
 
   production:
-    environment: production
     uses: ./.github/workflows/docker-publish.yaml
-    needs: ["build", "staging"]
     secrets: inherit
     with:
+      needs: ["build", "staging"]
+      environment: production
       version: ${{ needs.build.outputs.version }}
       docker-url: ${{ vars.DOCKER_URL }}
       docker-repo: ${{ vars.DOCKER_REPO }}
