@@ -10,7 +10,7 @@ jobs:
   staging-publish:
     environment: staging
     runs-on: ubuntu-latest
-    ouptuts: 
+    ouptuts:
       version: ${{ steps.version.outputs.version }}
       image: ${{ env.DOCKER_IMAGE }}
     env:
@@ -34,7 +34,7 @@ jobs:
         docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}
         mkdir .artifacts
         docker save ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version}} > .artifacts/image.tgz
-          
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -47,7 +47,7 @@ jobs:
     environment: production
     env:
       VERSION: ${{ needs.staging-publish.outputs.version }}
-      STG_DOCKER_IMAGE: ${{ needs.staging-publish.outputs.image }} 
+      STG_DOCKER_IMAGE: ${{ needs.staging-publish.outputs.image }}
       DOCKER_IMAGE: ${{ vars.DOCKER_URL }}/${{ vars.DOCKER_REPO }}
     needs:
       - staging-publish
@@ -67,6 +67,6 @@ jobs:
     - name: Load the Docker image
       run: docker load < .artifacts/image.tgz
     - name: Load the Docker image
-      run: docker tag ${{ env.STG_DOCKER_IMAGE }}:${{ env.VERSION }} ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }} 
+      run: docker tag ${{ env.STG_DOCKER_IMAGE }}:${{ env.VERSION }} ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
     - name: Publish Docker Image
       run: docker push ${{ env.DOCKER_IMAGE }}:${{ env.VERSION }}
